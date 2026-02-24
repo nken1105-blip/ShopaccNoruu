@@ -1,0 +1,221 @@
+<!DOCTYPE html><html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Acc Liên Quân Pro Max</title><style>
+body{
+font-family:Arial;
+margin:0;
+background:#0f172a;
+color:white;
+}
+
+header{
+background:linear-gradient(90deg,#7c3aed,#2563eb);
+padding:15px;
+text-align:center;
+font-size:26px;
+font-weight:bold;
+box-shadow:0 0 20px #7c3aed;
+}
+
+.container{
+padding:20px;
+max-width:1200px;
+margin:auto;
+}
+
+.controls{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
+
+input,select,button{
+padding:10px;
+border-radius:8px;
+border:none;
+}
+
+button{
+background:#7c3aed;
+color:white;
+cursor:pointer;
+font-weight:bold;
+}
+
+button:hover{
+background:#6d28d9;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:15px;
+}
+
+.card{
+background:#1e293b;
+padding:15px;
+border-radius:12px;
+transition:0.3s;
+position:relative;
+}
+
+.card:hover{
+transform:scale(1.05);
+box-shadow:0 0 20px #7c3aed;
+}
+
+.price{
+color:#22c55e;
+font-weight:bold;
+font-size:18px;
+}
+
+.badge{
+background:#f59e0b;
+padding:3px 8px;
+border-radius:6px;
+font-size:12px;
+margin-left:5px;
+}
+
+.admin{
+margin-top:30px;
+background:#020617;
+padding:15px;
+border-radius:12px;
+box-shadow:0 0 10px #2563eb;
+}
+
+.cart{
+position:fixed;
+right:10px;
+top:10px;
+background:#020617;
+padding:10px;
+border-radius:10px;
+box-shadow:0 0 10px #22c55e;
+}
+
+.buy{
+margin-top:10px;
+width:100%;
+background:#22c55e;
+}
+
+.buy:hover{
+background:#16a34a;
+}
+
+.delete{
+position:absolute;
+top:5px;
+right:5px;
+background:red;
+font-size:12px;
+padding:5px;
+}
+
+</style></head>
+<body><header>
+SHOP ACC LIÊN QUÂN PRO MAX
+</header><div class="cart">
+🛒 Giỏ hàng: <span id="cartCount">0</span>
+</div><div class="container"><div class="controls">
+<input id="search" placeholder="Tìm skin hoặc rank" oninput="render()">
+<select id="filter" onchange="render()">
+<option value="">Tất cả</option>
+<option value="S">Rank S</option>
+<option value="SS">Rank SS</option>
+<option value="VIP">VIP</option>
+<option value="Túi mù">Túi mù</option>
+</select>
+<button onclick="blindBag()">🎁 Mua túi mù</button>
+</div><div class="grid" id="shop"></div><div class="admin">
+<h3>Admin thêm acc</h3>
+<input id="name" placeholder="Tên acc">
+<input id="skin" placeholder="Số skin">
+<input id="rank" placeholder="Rank (S,SS,VIP)">
+<input id="price" placeholder="Giá">
+<button onclick="addAcc()">➕ Thêm acc</button>
+</div></div><script>
+let accs = JSON.parse(localStorage.getItem("accs")) || [
+{name:"Acc VIP 999 skin",skin:999,rank:"VIP",price:500000},
+{name:"Acc SS 300 skin",skin:300,rank:"SS",price:200000},
+{name:"Acc S 150 skin",skin:150,rank:"S",price:100000}
+];
+
+let cart=0;
+
+function save(){
+localStorage.setItem("accs",JSON.stringify(accs));
+}
+
+function render(){
+let shop=document.getElementById("shop");
+let search=document.getElementById("search").value.toLowerCase();
+let filter=document.getElementById("filter").value;
+
+shop.innerHTML="";
+
+accs.forEach((acc,i)=>{
+
+if(search && !acc.name.toLowerCase().includes(search)) return;
+if(filter && acc.rank!==filter) return;
+
+shop.innerHTML+=`
+<div class="card">
+<button class="delete" onclick="deleteAcc(${i})">X</button>
+<h3>${acc.name}</h3>
+<p>Skin: ${acc.skin}</p>
+<p>Rank: ${acc.rank} <span class="badge">HOT</span></p>
+<p class="price">${acc.price.toLocaleString()}đ</p>
+<button class="buy" onclick="buy(${i})">Mua ngay</button>
+</div>
+`;
+
+});
+}
+
+function addAcc(){
+let name=document.getElementById("name").value;
+let skin=document.getElementById("skin").value;
+let rank=document.getElementById("rank").value;
+let price=document.getElementById("price").value;
+
+if(!name||!skin||!rank||!price){
+alert("Nhập đủ thông tin");
+return;
+}
+
+accs.push({name,skin,rank,price:Number(price)});
+save();
+render();
+alert("Đã thêm acc");
+}
+
+function deleteAcc(i){
+accs.splice(i,1);
+save();
+render();
+}
+
+function buy(i){
+cart++;
+document.getElementById("cartCount").innerText=cart;
+alert("Mua thành công: "+accs[i].name);
+}
+
+function blindBag(){
+let random=accs[Math.floor(Math.random()*accs.length)];
+cart++;
+document.getElementById("cartCount").innerText=cart;
+alert("Bạn nhận được: "+random.name);
+}
+
+render();
+</script></body>
+</html>
